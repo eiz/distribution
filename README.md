@@ -1,8 +1,7 @@
-# distribution
-
 <p align="center">
-  <img src="https://raw.githubusercontent.com/eiz/distribution/main/distribution/Assets.xcassets/AppIcon.appiconset/icon_1024x1024.png" alt="hustlin'" width=512 height=512/>
+  <img src="https://raw.githubusercontent.com/eiz/distribution/main/distribution/Assets.xcassets/AppIcon.appiconset/icon_1024x1024.png" alt="hustlin'" width=256 height=256/>
 </p>
+<h2 align=center border=0>distribution</h2>
 
 a few hours hack to launch exodos/exowin3x games on macOS. there are no features.
 
@@ -20,3 +19,7 @@ to extract the needed metadata you can do
 ```
 
 from the root
+
+obligatory screenshot:
+
+![features](doc/features.png)
