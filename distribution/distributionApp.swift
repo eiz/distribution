@@ -31,7 +31,7 @@ struct ContentView: View {
     var preview = false
     @State private var searchText = ""
     @State private var items: [Game] = []
-    @State private var isRunning = false
+    @State private var isBusy = false
     @State private var hasError = false
     @State private var status = "Ready."
     
@@ -50,7 +50,7 @@ struct ContentView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
             let games = filteredItems
-            if isRunning || hasError {
+            if isBusy || hasError {
                 Text(status).italic()
             } else {
                 Text("\(games.count) game\(games.count != 1 ? "s" : "").").italic()
@@ -66,7 +66,7 @@ struct ContentView: View {
                     Spacer()
                     Button(action: { handlePlay(for: game) }, label: {
                         Image(systemName: "play.circle.fill")
-                    }).disabled(isRunning)
+                    }).disabled(isBusy)
                 }
                 .tag(game.id)
             }
@@ -104,6 +104,8 @@ struct ContentView: View {
     }
     
     func loadGames() {
+        status = "Loading games..."
+        isBusy = true
         DispatchQueue.global(qos: .background).async {
             let jsonPath = retroPath.appending(component: ".distribution.json")
             if (try? jsonPath.checkResourceIsReachable()) ?? false {
@@ -112,21 +114,28 @@ struct ContentView: View {
                     let games = try decoder.decode([Game].self, from: Data(contentsOf: jsonPath))
                     DispatchQueue.main.async {
                         self.items = games
+                        isBusy = false
                     }
                     return
                 } catch {
                     print("Failed to load cache, falling back to XML")
                 }
             }
+            setStatusAsync("Importing eXoDOS metadata...")
             var games: [Game] = []
             loadCollection(&games, "eXoDOS", "all/MS-DOS.xml")
             loadCollection(&games, "eXoWin3x", "Windows 3x.xml")
+            if games.count == 0 {
+                setErrorAsync("No games found. Check the README!")
+                return
+            }
             games = games.sorted(by: { $0.title < $1.title })
             let encoder = JSONEncoder()
             let data = try? encoder.encode(games)
             try? data?.write(to: jsonPath)
             DispatchQueue.main.async {
                 self.items = games
+                isBusy = false
             }
         }
     }
@@ -141,12 +150,12 @@ struct ContentView: View {
         DispatchQueue.main.async {
             self.status = status
             hasError = true
-            isRunning = false
+            isBusy = false
         }
     }
     
     private func handlePlay(for item: Game) {
-        isRunning = true
+        isBusy = true
         status = "Checking game data..."
         DispatchQueue.global(qos: .background).async {
             playExo(item)
@@ -196,7 +205,7 @@ struct ContentView: View {
         setStatusAsync("Waiting for game...")
         kid.waitUntilExit()
         DispatchQueue.main.async {
-            isRunning = false
+            isBusy = false
         }
     }
 }
