@@ -9,14 +9,14 @@
 /* Begin PBXBuildFile section */
 		613611772B1A7C56009C3C0F /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 613611762B1A7C56009C3C0F /* Zip */; };
 		617D136C2B1A3A2E00A18C4B /* SWXMLHash in Frameworks */ = {isa = PBXBuildFile; productRef = 617D136B2B1A3A2E00A18C4B /* SWXMLHash */; };
-		61D0E4482B1A21EC002F14A4 /* distributionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D0E4472B1A21EC002F14A4 /* distributionApp.swift */; };
+		61D0E4482B1A21EC002F14A4 /* DistributionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D0E4472B1A21EC002F14A4 /* DistributionApp.swift */; };
 		61D0E44C2B1A21ED002F14A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61D0E44B2B1A21ED002F14A4 /* Assets.xcassets */; };
 		61D0E44F2B1A21ED002F14A4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61D0E44E2B1A21ED002F14A4 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		61D0E4442B1A21EC002F14A4 /* distribution.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = distribution.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		61D0E4472B1A21EC002F14A4 /* distributionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = distributionApp.swift; sourceTree = "<group>"; };
+		61D0E4472B1A21EC002F14A4 /* DistributionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistributionApp.swift; sourceTree = "<group>"; };
 		61D0E44B2B1A21ED002F14A4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		61D0E44E2B1A21ED002F14A4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		61D0E4502B1A21ED002F14A4 /* distribution.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = distribution.entitlements; sourceTree = "<group>"; };
@@ -54,7 +54,7 @@
 		61D0E4462B1A21EC002F14A4 /* distribution */ = {
 			isa = PBXGroup;
 			children = (
-				61D0E4472B1A21EC002F14A4 /* distributionApp.swift */,
+				61D0E4472B1A21EC002F14A4 /* DistributionApp.swift */,
 				61D0E44B2B1A21ED002F14A4 /* Assets.xcassets */,
 				61D0E4502B1A21ED002F14A4 /* distribution.entitlements */,
 				61D0E44D2B1A21ED002F14A4 /* Preview Content */,
@@ -148,7 +148,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				61D0E4482B1A21EC002F14A4 /* distributionApp.swift in Sources */,
+				61D0E4482B1A21EC002F14A4 /* DistributionApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

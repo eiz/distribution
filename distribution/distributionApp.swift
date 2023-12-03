@@ -10,7 +10,7 @@ import SWXMLHash
 import Zip
 
 @main
-struct distributionApp: App {
+struct DistributionApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(retroPath: getRetroPath())
@@ -19,11 +19,9 @@ struct distributionApp: App {
     
     private func getRetroPath() -> URL {
         let parentURL = URL(fileURLWithPath: Bundle.main.bundlePath).deletingLastPathComponent()
-        
         if (try? parentURL.appending(component: "eXoDOS").checkResourceIsReachable()) ?? false {
             return parentURL
         }
-        
         return URL(fileURLWithPath: "/Volumes/Retro")
     }
 }
@@ -37,7 +35,13 @@ struct ContentView: View {
     @State private var hasError = false
     @State private var status = "Ready."
     
-    private let types: [String] = ["Box - Front", "Box - 3D", "Box - Front - Reconstructed", "Advertisement Flyer - Front", "Screenshot - Game Title"]
+    private let types: [String] = [
+        "Box - Front",
+        "Box - 3D",
+        "Box - Front - Reconstructed",
+        "Advertisement Flyer - Front",
+        "Screenshot - Game Title"
+    ]
     private let regions: [String] = ["United States", "North America"]
     
     var body: some View {
@@ -45,14 +49,12 @@ struct ContentView: View {
             TextField("Search", text: $searchText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
-            
             let games = filteredItems
             if isRunning || hasError {
                 Text(status).italic()
             } else {
                 Text("\(games.count) game\(games.count != 1 ? "s" : "").").italic()
             }
-            
             List(games) { game in
                 HStack {
                     GameImageView(retroPath: retroPath, game: game, types: types, regions: regions)
@@ -84,7 +86,7 @@ struct ContentView: View {
         }
     }
     
-    func loadCollection(_ leGames: inout [Game], _ collection: String, _ xmlPath: String) {
+    func loadCollection(_ games: inout [Game], _ collection: String, _ xmlPath: String) {
         let path = retroPath.appending(components: collection, "xml", xmlPath)
         guard let data = try? Data(contentsOf: path) else {
             return
@@ -96,9 +98,8 @@ struct ContentView: View {
                 collection: collection,
                 platform: el["Platform"].element!.text,
                 title: title, path: el["ApplicationPath"].element!.text)
-            
             item.id = UUID(uuidString:el["ID"].element!.text)!
-            leGames.append(item)
+            games.append(item)
         }
     }
     
@@ -109,7 +110,6 @@ struct ContentView: View {
                 do {
                     let decoder = JSONDecoder()
                     let games = try decoder.decode([Game].self, from: Data(contentsOf: jsonPath))
-                    
                     DispatchQueue.main.async {
                         self.items = games
                     }
@@ -118,7 +118,6 @@ struct ContentView: View {
                     print("Failed to load cache, falling back to XML")
                 }
             }
-            
             var games: [Game] = []
             loadCollection(&games, "eXoDOS", "all/MS-DOS.xml")
             loadCollection(&games, "eXoWin3x", "Windows 3x.xml")
@@ -126,7 +125,6 @@ struct ContentView: View {
             let encoder = JSONEncoder()
             let data = try? encoder.encode(games)
             try? data?.write(to: jsonPath)
-            
             DispatchQueue.main.async {
                 self.items = games
             }
@@ -165,12 +163,10 @@ struct ContentView: View {
         let gamePath = exoRoot.appending(component: gameDirName)
         let zipExists = (try? zipPath.checkResourceIsReachable()) ?? false
         let gameExists = (try? gamePath.checkResourceIsReachable()) ?? false
-        
         if !gameExists && !zipExists {
-            setStatusAsync("Game .zip is missing.")
+            setErrorAsync("Game .zip is missing.")
             return
         }
-        
         if !gameExists {
             setStatusAsync("Extracting game...")
             do {
@@ -180,9 +176,7 @@ struct ContentView: View {
                 return
             }
         }
-        
         setStatusAsync("Launching game...")
-        
         let kid = Process()
         kid.executableURL = retroPath.appending(components: "DOSBox Staging.app", "Contents", "MacOS", "dosbox")
         var dosboxConfPath = self.retroPath
@@ -193,7 +187,6 @@ struct ContentView: View {
         dosboxConfPath.append(component: "dosbox.conf")
         kid.arguments = ["-conf", dosboxConfPath.path]
         kid.currentDirectoryURL = exoRoot.deletingLastPathComponent()
-        print(String(describing:kid.arguments))
         do {
             try kid.run()
         } catch {
@@ -202,7 +195,6 @@ struct ContentView: View {
         }
         setStatusAsync("Waiting for game...")
         kid.waitUntilExit()
-        
         DispatchQueue.main.async {
             isRunning = false
         }
@@ -218,7 +210,6 @@ func titleToPath(_ input: String) -> String {
 
 func makeImageCache() -> NSCache<NSUUID, NSImage> {
     let result = NSCache<NSUUID, NSImage>()
-    
     result.countLimit = 100
     return result
 }
@@ -277,18 +268,15 @@ class GameImageLoader: ObservableObject {
         DispatchQueue.global(qos: .background).async {
             for ext in ["jpg", "png"] {
                 let fileName = "\(titleToPath(self.game.title))-01.\(ext)"
-                
                 for type in self.types {
                     let imageBase = self.retroPath.appending(components: self.game.collection, "Images", self.game.platform, type)
                     for region in self.regions {
                         let regionBase = imageBase.appending(component: region)
                         let path = regionBase.appending(component: fileName)
-                        
                         if self.tryLoadImage(source: path) {
                             return
                         }
                     }
-                    
                     if self.tryLoadImage(source: imageBase.appending(component: fileName)) {
                         return
                     }
